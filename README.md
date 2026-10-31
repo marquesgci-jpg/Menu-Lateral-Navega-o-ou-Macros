@@ -7,7 +7,7 @@ hierárquicos e uma caixa de pesquisa.
 
 ## Veja o suplemento
 
-![Menu lateral em execução no Excel](docs/images/menu-lateral-final.png)
+![Menu lateral em execução no Excel][(docs/images/menu-lateral-final.png)](https://github.com/marquesgci-jpg/Menu-Lateral-Navega-o-ou-Macros/blob/main/MenuLateralNavegacao-GitHub-somente-uso/docs/images/menu-lateral-final.png)
 
 ## O que você pode fazer
 
