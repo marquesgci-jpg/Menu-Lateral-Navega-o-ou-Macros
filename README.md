@@ -1,58 +1,113 @@
-# Menu Lateral de Navegação para Excel — somente uso
+# Menu Lateral de Navegação para Excel
 
-Distribuição do suplemento COM/VSTO para instalar e usar no Excel. Inclui uma
-planilha de teste editável, mas não inclui os fontes C# do suplemento.
+Suplemento VSTO para Microsoft Excel que disponibiliza um menu lateral de navegação.
+Este repositório organiza a distribuição atualmente disponível do suplemento.
 
-O VBA da planilha de demonstração permanece aberto e editável, sem senha.
-Para alterar o título, edite `tituloPainel` no início da macro
-`MontarMenuDemoCompleta` no arquivo ou no módulo exportado.
+> **Estado do código-fonte:** o projeto-fonte original não foi encontrado. Os
+> arquivos em `src/` são uma reconstrução por descompilação da DLL publicada.
+> O pacote com fontes inclui esses arquivos para consulta e modificação, mas
+> eles não são os fontes originais do projeto. Consulte
+> [Reconstrução dos fontes C#](docs/RECONSTRUCAO.md).
 
-## Conteúdo
+## Baixar e instalar
 
-- `deployment`: instalador e publicação VSTO assinada da versão 1.1.0.23.
-- `demo/Preview_Funcional_MenuLateralNavegacao.xlsm`: planilha de teste.
-- `demo/vba/DemoMenu.bas`: exportação do módulo VBA da demonstração.
-- `.github/workflows/release.yml`: criação de uma GitHub Release ao enviar tag.
+Baixe o pacote da versão mais recente na página
+[Releases](../../releases/latest). Extraia o ZIP e siga as instruções em
+[Instalação e ativação no Excel](docs/INSTALACAO.md).
 
-## Preparar o repositório no GitHub
+Há duas distribuições com a planilha de teste:
 
-1. Crie um repositório vazio no GitHub. Não selecione a opção para adicionar um
-   README, `.gitignore` ou licença, pois estes arquivos já estão aqui.
-2. No diretório deste projeto, inicialize o Git, adicione o repositório remoto,
-   faça o primeiro commit e envie a branch padrão.
-3. Crie e envie a tag `v1.1.0.23` para publicar a versão incluída:
+- `dist/MenuLateralNavegacao-v1.1.0.23-com-fontes.zip`: inclui o instalador,
+  a planilha e os fontes C# reconstruídos do suplemento.
+- `dist/MenuLateralNavegacao-v1.1.0.23-somente-uso.zip`: inclui o instalador e
+  a planilha, mas não inclui os fontes do suplemento.
 
-   ```powershell
-   git init
-   git add .
-   git commit -m "Initial release"
-   git branch -M main
-   git remote add origin https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
-   git push -u origin main
-   git tag v1.1.0.23
-   git push origin v1.1.0.23
-   ```
+Em ambas, o projeto VBA da planilha permanece aberto e editável. A diferença
+entre os pacotes é somente a inclusão dos fontes do suplemento. O pacote
+somente uso não impede tecnicamente engenharia reversa dos binários.
 
-4. No GitHub, acompanhe **Actions**. O workflow empacota o instalador e a
-   planilha e cria uma Release com um ZIP para distribuição.
+Esta é uma reconstrução para validação. Os manifestos do pacote 1.1.0.23 foram
+assinados com a identidade existente. A árvore usa os PNGs de pasta aberta e
+fechada enviados pelo usuário, em 32×32 px, sem moldura. Os botões das vistas
+usam o estilo padrão elevado do Windows, com ícones centralizados de 24×24 px
+em botões de 38×38 px. O título do painel pode ser alterado ao executar
+novamente a macro, sem perder as vistas e os itens. Na planilha de demonstração, altere a variável `tituloPainel` no início da
+macro `MontarMenuDemoCompleta` e execute-a novamente. A variável aceita
+caracteres Unicode, incluindo acentos. A busca não exibe mais a lupa e o botão
+de recolhimento tem uma área de clique maior.
+Valide as vistas, os ícones, a cor de destaque e o título opcional em uma cópia
+da pasta de trabalho antes de distribuir amplamente.
 
-Para validar o empacotamento localmente:
+## Personalizar o painel
 
-```powershell
-.\scripts\Package-Release.ps1 -Version v1.1.0.23 -OutputDirectory .\artifacts
+As pastas de trabalho podem definir vistas, itens, macros e ícones em suas
+próprias Subs VBA. `Title` define o cabeçalho nativo do painel quando ele é
+criado; o mesmo valor pode ser reaplicado ao reconstruir o menu. `ConfigurarTema`
+usa o tema claro e aceita uma cor de destaque hexadecimal. A árvore usa o
+estilo clássico do Windows, com pastas amarelas e ícones de página. Imagens
+opcionais podem ser incorporadas na planilha `RecursosMenu` e referenciadas
+pelo nome do objeto. O rodapé com o nome do autor e o link Patreon é fixo no
+suplemento. Consulte [Reconstrução dos fontes C#](docs/RECONSTRUCAO.md) para a
+API e um exemplo VBA.
+
+## Requisitos
+
+- Windows com a versão desktop do Microsoft Excel.
+- .NET Framework 4.7.2 e o runtime do Visual Studio Tools for Office (VSTO).
+  O instalador de bootstrap (`setup.exe`) pode verificar/instalar pré-requisitos.
+- Conexão com a internet se o instalador precisar obter pré-requisitos.
+
+## Estrutura
+
+```text
+.
+├── Application Files/          # Publicação ClickOnce do suplemento
+├── docs/
+│   ├── INSTALACAO.md           # Instalação, ativação e solução de problemas
+│   ├── RECONSTRUCAO.md         # Proveniência e limitações dos fontes recuperados
+│   └── PROMPT_THUMBNAIL.md     # Prompt para criar thumbnail de divulgação
+├── dist/
+│   ├── MenuLateralNavegacao-v1.1.0.23-com-fontes.zip
+│   └── MenuLateralNavegacao-v1.1.0.23-somente-uso.zip
+├── src/
+│   └── MenuLateralNavegacao/   # Fontes C# recuperados da DLL publicada
+├── Instalar_Suplemento.bat     # Abre o instalador incluído
+├── MenuLateralNavegacao.vsto   # Manifesto de implantação VSTO
+├── readme.txt                  # Atalho para a documentação
+└── setup.exe                   # Bootstrapper do instalador
 ```
 
-O workflow usa a publicação assinada já presente em `deployment`; não recompila
-nem reassina o add-in. Uma atualização VSTO exige uma publicação da nova versão
-assinada com a mesma chave privada, que não deve ser enviada ao GitHub.
+As planilhas de exemplo, logs e a cópia antiga `MenuLateralNavegacao_Arquivos`
+foram excluídos do pacote de instalação e não são necessárias para compilar o
+suplemento.
 
-## Limites, assinatura e licença
+## Assinatura e confiança
 
-O binário não vem acompanhado dos fontes C#. Isso evita incluir os arquivos
-fonte no repositório, mas não impede tecnicamente engenharia reversa ou
-alteração do binário. O certificado `.cer` é autoassinado; confira sua origem
-e impressão digital antes de confiar nele. Os binários VSTO solicitam confiança
-total; distribua somente a usuários que confiem na origem.
+O pacote inicial usa um certificado autoassinado para
+`Menu Lateral de Navegacao - Desenvolvimento`. Isso não comprova a identidade
+do desenvolvedor para terceiros: cada usuário deve conferir a origem do
+certificado `.cer` e decidir explicitamente se confia nele. As instruções de
+instalação explicam como confiar no certificado para o usuário atual do Windows.
+O certificado esperado tem a impressão digital
+`0E05C3A8B3F93AA42C8C26EBEFDDD15D13143441`; compare-a com uma fonte independente
+antes de confiar no pacote. Não distribua o arquivo PFX nem a chave privada.
 
-Nenhuma licença de software foi incluída. Defina uma licença apropriada antes
-de autorizar redistribuição por terceiros.
+O certificado e sua chave privada precisam ser preservados para assinar futuras
+versões com a mesma identidade. Perder a chave exigirá uma nova identidade e
+uma nova instalação, não uma atualização ClickOnce.
+
+Os binários declaram permissões de confiança total. Distribua-os somente a
+usuários que confiem na origem e depois de validar a assinatura e o conteúdo
+do pacote.
+
+## Preparar uma versão
+
+1. Teste a DLL reconstruída no Excel e valide a publicação VSTO.
+2. Crie o ZIP com `setup.exe`, `MenuLateralNavegacao.vsto` e a pasta
+   `Application Files` da mesma versão.
+3. Nomeie o arquivo `MenuLateralNavegacao-v<versão>.zip`.
+4. Publique o ZIP como asset de uma nova GitHub Release e atualize o changelog.
+
+Os fontes atuais são uma recuperação, não uma cópia do projeto-fonte original.
+Antes de aceitar contribuições de desenvolvimento ou substituir o instalador,
+valide a compilação, a integração VSTO e uma nova publicação assinada.
